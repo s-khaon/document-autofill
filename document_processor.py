@@ -196,13 +196,37 @@ class DocumentProcessor:
         """Helper to search and replace image in a list of paragraphs."""
         for para in paragraphs:
             if placeholder in para.text:
+                # The placeholder might be {{签名图片}} or {签名图片} or similar.
+                # If we found it, we need to replace it with the image.
+
+                # Check if it's the only content (common case for signature cells)
                 if para.text.strip() == placeholder:
-                    para.text = ""
-                else:
+                    para.text = ""  # Clear text
+                    run = para.add_run()
+                    run.add_picture(image_path, width=Inches(width_inches))
+                    return True
+
+                # If mixed content, replacing text is tricky because image is appended.
+                # But for signature, it's usually acceptable to append.
+                # NOTE: para.text assignment destroys formatting and runs!
+                # We should replace text in runs instead if possible.
+
+                # Try to find the run containing the placeholder
+                replaced = False
+                for run in para.runs:
+                    if placeholder in run.text:
+                        run.text = run.text.replace(placeholder, "")
+                        run.add_picture(image_path, width=Inches(width_inches))
+                        replaced = True
+                        return True
+
+                if not replaced:
+                    # If split across runs, we have to fall back to para.text assignment
+                    # This might lose formatting of other text in the same paragraph
                     para.text = para.text.replace(placeholder, "")
-                run = para.add_run()
-                run.add_picture(image_path, width=Inches(width_inches))
-                return True
+                    run = para.add_run()
+                    run.add_picture(image_path, width=Inches(width_inches))
+                    return True
         return False
 
     def get_excel_files(self) -> list[str]:
