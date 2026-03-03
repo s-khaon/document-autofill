@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+env/
+
+# Environment Variables
+.env
+
+# macOS
+.DS_Store
+
+# Project Output
+output/
+
+# IDEs
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Playwright
+test-results/
+playwright-report/
+模板文档2.docx
+input/视频授权书.xlsx
